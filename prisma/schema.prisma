@@ -1,0 +1,143 @@
+// This is your Prisma schema file
+
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider = "postgresql"
+  url      = env("DATABASE_URL")
+}
+
+enum Role {
+  CUSTOMER
+  PROVIDER
+  ADMIN
+}
+
+enum OrderStatus {
+  PENDING
+  ACCEPTED
+  SCHEDULED
+  EN_ROUTE
+  IN_PROGRESS
+  COMPLETED
+  CANCELLED
+}
+
+enum ComplexityLevel {
+  BASIC
+  INTERMEDIATE
+  COMPLEX
+}
+
+enum UrgencyLevel {
+  NORMAL
+  HIGH
+  URGENT
+}
+
+enum DisputeStatus {
+  OPEN
+  AI_REVIEWED
+  RESOLVED
+  ESCALATED
+}
+
+model User {
+  id        String   @id @default(uuid())
+  role      Role
+  name      String
+  phone     String   @unique
+  email     String?  @unique
+  password  String
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  providerProfile  Provider?
+  ordersAsCustomer Order[]   @relation("CustomerOrders")
+  addresses        Address[]
+}
+
+model Address {
+  id          String   @id @default(uuid())
+  userId      String
+  user        User     @relation(fields: [userId], references: [id])
+  houseFlatNo String
+  area        String
+  city        String
+  landmark    String?
+  postalCode  String?
+  latitude    Float?
+  longitude   Float?
+  isDefault   Boolean  @default(false)
+}
+
+model Provider {
+  id                   String   @id @default(uuid())
+  userId               String   @unique
+  user                 User     @relation(fields: [userId], references: [id])
+  specializationTags   String[]
+  reliabilityScore     Float    @default(5.0)
+  cancellationRate     Float    @default(0.0)
+  workloadCapacity     Int      @default(3)
+  disputeCount         Int      @default(0)
+  reviewSentimentScore Float    @default(5.0)
+  isAvailable          Boolean  @default(true)
+  isVerified           Boolean  @default(false)
+  createdAt            DateTime @default(now())
+  updatedAt            DateTime @updatedAt
+
+  ordersAsProvider Order[] @relation("ProviderOrders")
+}
+
+model Order {
+  id                 String          @id @default(uuid())
+  customerId         String
+  providerId         String?
+  customer           User            @relation("CustomerOrders", fields: [customerId], references: [id])
+  provider           Provider?       @relation("ProviderOrders", fields: [providerId], references: [id])
+  orderStatus        OrderStatus     @default(PENDING)
+  complexityLevel    ComplexityLevel @default(BASIC)
+  urgencyLevel       UrgencyLevel    @default(NORMAL)
+  serviceType        String
+  serviceDescription String?
+  scheduledAt        DateTime?
+  aiMatchScore       Float?
+  baseFee            Float?
+  distanceFee        Float?
+  urgencyFee         Float?
+  complexityFee      Float?
+  discount           Float?
+  totalAmount        Float?
+  createdAt          DateTime        @default(now())
+  updatedAt          DateTime        @updatedAt
+
+  aiLogs   AILog[]
+  disputes Dispute[]
+}
+
+model AILog {
+  id              String   @id @default(uuid())
+  orderId         String
+  order           Order    @relation(fields: [orderId], references: [id])
+  intentTrace     Json?
+  pricingTrace    Json?
+  schedulingTrace Json?
+  disputeTrace    Json?
+  createdAt       DateTime @default(now())
+}
+
+model Dispute {
+  id          String        @id @default(uuid())
+  orderId     String
+  order       Order         @relation(fields: [orderId], references: [id])
+  reason      String
+  description String?
+  status      DisputeStatus @default(OPEN)
+  aiAnalysis  Json?
+  resolution  String?
+  refundAmt   Float?
+  createdAt   DateTime      @default(now())
+  updatedAt   DateTime      @updatedAt
+}
