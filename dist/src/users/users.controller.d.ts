@@ -5,7 +5,6 @@ export declare class UsersController {
     getProfile(req: any): Promise<({
         addresses: {
             id: string;
-            userId: string;
             label: string;
             houseFlatNo: string;
             area: string;
@@ -15,20 +14,21 @@ export declare class UsersController {
             latitude: number | null;
             longitude: number | null;
             isDefault: boolean;
+            userId: string;
         }[];
         notificationSettings: {
             id: string;
-            userId: string;
             pushEnabled: boolean;
             smsEnabled: boolean;
             emailEnabled: boolean;
+            userId: string;
         } | null;
     } & {
         id: string;
-        phone: string;
-        email: string | null;
         role: import(".prisma/client").$Enums.Role;
         name: string;
+        phone: string;
+        email: string | null;
         password: string;
         theme: import(".prisma/client").$Enums.Theme;
         language: import(".prisma/client").$Enums.Language;
@@ -37,10 +37,10 @@ export declare class UsersController {
     }) | null>;
     updateProfile(req: any, body: any): Promise<{
         id: string;
-        phone: string;
-        email: string | null;
         role: import(".prisma/client").$Enums.Role;
         name: string;
+        phone: string;
+        email: string | null;
         password: string;
         theme: import(".prisma/client").$Enums.Theme;
         language: import(".prisma/client").$Enums.Language;
@@ -49,10 +49,10 @@ export declare class UsersController {
     }>;
     updateTheme(req: any, theme: string): Promise<{
         id: string;
-        phone: string;
-        email: string | null;
         role: import(".prisma/client").$Enums.Role;
         name: string;
+        phone: string;
+        email: string | null;
         password: string;
         theme: import(".prisma/client").$Enums.Theme;
         language: import(".prisma/client").$Enums.Language;
@@ -61,10 +61,10 @@ export declare class UsersController {
     }>;
     updateLanguage(req: any, language: string): Promise<{
         id: string;
-        phone: string;
-        email: string | null;
         role: import(".prisma/client").$Enums.Role;
         name: string;
+        phone: string;
+        email: string | null;
         password: string;
         theme: import(".prisma/client").$Enums.Theme;
         language: import(".prisma/client").$Enums.Language;
@@ -73,14 +73,13 @@ export declare class UsersController {
     }>;
     updateNotifications(req: any, body: any): Promise<{
         id: string;
-        userId: string;
         pushEnabled: boolean;
         smsEnabled: boolean;
         emailEnabled: boolean;
+        userId: string;
     }>;
     addAddress(req: any, body: any): Promise<{
         id: string;
-        userId: string;
         label: string;
         houseFlatNo: string;
         area: string;
@@ -90,6 +89,7 @@ export declare class UsersController {
         latitude: number | null;
         longitude: number | null;
         isDefault: boolean;
+        userId: string;
     }>;
     deleteAddress(req: any, id: string): Promise<import(".prisma/client").Prisma.BatchPayload>;
 }

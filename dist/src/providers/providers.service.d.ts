@@ -21,16 +21,21 @@ export declare class ProvidersService {
             id: string;
             createdAt: Date;
             providerId: string;
+            status: string;
             type: string;
             url: string | null;
-            status: string;
         }[];
     } & {
         id: string;
-        userId: string;
+        createdAt: Date;
+        updatedAt: Date;
+        latitude: number | null;
+        longitude: number | null;
         specializationTags: string[];
         category: string | null;
         reliabilityScore: number;
+        punctualityScore: number;
+        communicationScore: number;
         cancellationRate: number;
         workloadCapacity: number;
         disputeCount: number;
@@ -40,8 +45,7 @@ export declare class ProvidersService {
         minPrice: number | null;
         maxPrice: number | null;
         firstBookingDiscount: number | null;
-        createdAt: Date;
-        updatedAt: Date;
+        userId: string;
     }) | null>;
     getDashboardStats(userId: string): Promise<{
         todaysEarnings: number;
@@ -51,22 +55,20 @@ export declare class ProvidersService {
         incomingJobs: ({
             customer: {
                 id: string;
-                createdAt: Date;
-                updatedAt: Date;
-                name: string;
                 role: import(".prisma/client").$Enums.Role;
+                name: string;
                 phone: string;
                 email: string | null;
                 password: string;
                 theme: import(".prisma/client").$Enums.Theme;
                 language: import(".prisma/client").$Enums.Language;
+                createdAt: Date;
+                updatedAt: Date;
             };
         } & {
             id: string;
             createdAt: Date;
             updatedAt: Date;
-            providerId: string | null;
-            customerId: string;
             orderStatus: import(".prisma/client").$Enums.OrderStatus;
             complexityLevel: import(".prisma/client").$Enums.ComplexityLevel;
             urgencyLevel: import(".prisma/client").$Enums.UrgencyLevel;
@@ -80,6 +82,8 @@ export declare class ProvidersService {
             complexityFee: number | null;
             discount: number | null;
             totalAmount: number | null;
+            customerId: string;
+            providerId: string | null;
         })[];
     } | null>;
     getAnalytics(userId: string): Promise<{
@@ -102,10 +106,15 @@ export declare class ProvidersService {
         firstBookingDiscount?: number;
     }): Promise<{
         id: string;
-        userId: string;
+        createdAt: Date;
+        updatedAt: Date;
+        latitude: number | null;
+        longitude: number | null;
         specializationTags: string[];
         category: string | null;
         reliabilityScore: number;
+        punctualityScore: number;
+        communicationScore: number;
         cancellationRate: number;
         workloadCapacity: number;
         disputeCount: number;
@@ -115,8 +124,7 @@ export declare class ProvidersService {
         minPrice: number | null;
         maxPrice: number | null;
         firstBookingDiscount: number | null;
-        createdAt: Date;
-        updatedAt: Date;
+        userId: string;
     }>;
     updateSchedules(userId: string, schedules: any[]): Promise<import(".prisma/client").Prisma.BatchPayload | null>;
     updateSubServices(userId: string, subServices: any[]): Promise<import(".prisma/client").Prisma.BatchPayload | null>;
@@ -127,8 +135,8 @@ export declare class ProvidersService {
         id: string;
         createdAt: Date;
         providerId: string;
+        status: string;
         type: string;
         url: string | null;
-        status: string;
     } | null>;
 }

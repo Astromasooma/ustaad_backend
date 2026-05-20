@@ -131,8 +131,8 @@ export class ProvidersService {
       reputationScores: {
         reliability: provider.reliabilityScore / 5,
         quality: provider.reviewSentimentScore / 5,
-        punctuality: provider.punctualityScore / 5,
-        communication: provider.communicationScore / 5,
+        punctuality: (provider as any).punctualityScore / 5,
+        communication: (provider as any).communicationScore / 5,
       },
     };
   }
