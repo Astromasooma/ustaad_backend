@@ -44,6 +44,24 @@ enum DisputeStatus {
   ESCALATED
 }
 
+enum PostType {
+  REQUEST
+  SERVICE
+  AI_INSIGHT
+}
+
+enum Theme {
+  LIGHT
+  DARK
+  SYSTEM
+}
+
+enum Language {
+  ENGLISH
+  URDU
+  ROMAN_URDU
+}
+
 model User {
   id        String   @id @default(uuid())
   role      Role
@@ -51,18 +69,44 @@ model User {
   phone     String   @unique
   email     String?  @unique
   password  String
+  theme     Theme    @default(SYSTEM)
+  language  Language @default(ENGLISH)
   createdAt DateTime @default(now())
   updatedAt DateTime @updatedAt
 
-  providerProfile  Provider?
-  ordersAsCustomer Order[]   @relation("CustomerOrders")
-  addresses        Address[]
+  providerProfile      Provider?
+  ordersAsCustomer     Order[]               @relation("CustomerOrders")
+  addresses            Address[]
+  posts                Post[]
+  notificationSettings NotificationSettings?
+}
+
+model NotificationSettings {
+  id           String  @id @default(uuid())
+  userId       String  @unique
+  user         User    @relation(fields: [userId], references: [id])
+  pushEnabled  Boolean @default(true)
+  smsEnabled   Boolean @default(false)
+  emailEnabled Boolean @default(true)
+}
+
+model Post {
+  id        String   @id @default(uuid())
+  userId    String
+  user      User     @relation(fields: [userId], references: [id])
+  type      PostType
+  text      String
+  likes     Int      @default(0)
+  comments  Int      @default(0)
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
 }
 
 model Address {
   id          String   @id @default(uuid())
   userId      String
   user        User     @relation(fields: [userId], references: [id])
+  label       String   @default("Home") // Home, Work, etc.
   houseFlatNo String
   area        String
   city        String
@@ -78,17 +122,56 @@ model Provider {
   userId               String   @unique
   user                 User     @relation(fields: [userId], references: [id])
   specializationTags   String[]
+  category             String?
   reliabilityScore     Float    @default(5.0)
+  punctualityScore     Float    @default(5.0)
+  communicationScore   Float    @default(5.0)
   cancellationRate     Float    @default(0.0)
   workloadCapacity     Int      @default(3)
   disputeCount         Int      @default(0)
   reviewSentimentScore Float    @default(5.0)
   isAvailable          Boolean  @default(true)
   isVerified           Boolean  @default(false)
+  latitude             Float?
+  longitude            Float?
+  minPrice             Float?   @default(500)
+  maxPrice             Float?   @default(5000)
+  firstBookingDiscount Float?   @default(0)
   createdAt            DateTime @default(now())
   updatedAt            DateTime @updatedAt
 
-  ordersAsProvider Order[] @relation("ProviderOrders")
+  ordersAsProvider Order[]              @relation("ProviderOrders")
+  schedules        ProviderSchedule[]
+  subServices      ProviderSubService[]
+  documents        ProviderDocument[]
+}
+
+model ProviderSchedule {
+  id         String   @id @default(uuid())
+  providerId String
+  provider   Provider @relation(fields: [providerId], references: [id])
+  dayOfWeek  String // Monday, Tuesday, etc.
+  startTime  String   @default("09:00")
+  endTime    String   @default("18:00")
+  isActive   Boolean  @default(true)
+}
+
+model ProviderSubService {
+  id         String   @id @default(uuid())
+  providerId String
+  provider   Provider @relation(fields: [providerId], references: [id])
+  name       String
+  isActive   Boolean  @default(true)
+}
+
+model ProviderDocument {
+  id         String   @id @default(uuid())
+  providerId String
+  provider   Provider @relation(fields: [providerId], references: [id])
+  type       String // CNIC, Trade Certificate, Police Character Certificate
+  url        String?
+  status     String   @default("PENDING") // PENDING, VERIFIED, REJECTED
+  createdAt  DateTime @default(now())
 }
 
 model Order {

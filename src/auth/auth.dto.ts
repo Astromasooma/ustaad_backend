@@ -4,7 +4,6 @@ import {
   IsOptional,
   MinLength,
   IsEnum,
-  IsPhoneNumber,
 } from 'class-validator';
 
 export enum UserRole {
@@ -30,6 +29,10 @@ export class RegisterDto {
   @IsEmail()
   @IsOptional()
   email?: string;
+
+  @IsString()
+  @IsOptional()
+  category?: string;
 }
 
 export class LoginDto {

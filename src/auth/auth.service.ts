@@ -39,7 +39,7 @@ export class AuthService {
     // Create provider profile if role is PROVIDER
     if (dto.role === 'PROVIDER') {
       await this.prisma.provider.create({
-        data: { userId: user.id },
+        data: { userId: user.id, category: dto.category },
       });
     }
 
@@ -47,7 +47,10 @@ export class AuthService {
 
     return {
       token,
-      user: this.sanitizeUser(user),
+      user: {
+        ...this.sanitizeUser(user),
+        category: dto.role === 'PROVIDER' ? (dto.category ?? null) : null,
+      },
     };
   }
 
@@ -67,9 +70,18 @@ export class AuthService {
 
     const token = this.generateToken(user.id, user.role);
 
+    // Fetch provider category if PROVIDER
+    let category: string | null = null;
+    if (user.role === 'PROVIDER') {
+      const provider = await this.prisma.provider.findUnique({
+        where: { userId: user.id },
+      });
+      category = provider?.category ?? null;
+    }
+
     return {
       token,
-      user: this.sanitizeUser(user),
+      user: { ...this.sanitizeUser(user), category },
     };
   }
 

@@ -86,8 +86,54 @@ export class AiService {
       complexityLevel: params.complexityLevel,
       urgencyLevel: params.urgencyLevel,
       pricing,
+      // Provide available sub-services and estimated base rates for frontend
+      subServices: this.getSubServices(params.serviceType),
       suggestedSlot: 'Tomorrow 10:00 AM',
     };
+  }
+
+  private getSubServices(serviceType: string) {
+    const lower = serviceType.toLowerCase();
+    if (lower.includes('beauty') || lower.includes('beautician')) {
+      return {
+        'Hair Styling': 1500,
+        'Facial Treatment': 2000,
+        'Waxing (Full Arms/Legs)': 1200,
+        'Threading': 300,
+        'Bridal Glow': 4500,
+      } as any;
+    }
+    if (lower.includes('ac') || lower.includes('ac repair')) {
+      return {
+        'AC General Service': 1500,
+        'Gas Leak Repair': 3500,
+        'Compressor Replacement': 8000,
+        'AC Filter Clean': 500,
+      } as any;
+    }
+    if (lower.includes('plumb') || lower.includes('plumbing')) {
+      return {
+        'Leakage Fixing': 800,
+        'Commode Installation': 3000,
+        'Tap Replacement': 500,
+        'Pipeline Unclogging': 1200,
+      } as any;
+    }
+    if (lower.includes('electric') || lower.includes('electrician')) {
+      return {
+        'Fan Repairing': 600,
+        'House Wiring (per point)': 200,
+        'UPS Maintenance': 1500,
+        'Short Circuit Fix': 1000,
+      } as any;
+    }
+
+    // Generic fallback
+    return {
+      'Standard Visit & Fix': 1000,
+      'Premium Care Pack': 2500,
+      'Emergency Diagnostic': 1500,
+    } as any;
   }
 
   // ── 3. Dynamic Pricing Engine ──────────────────────────
