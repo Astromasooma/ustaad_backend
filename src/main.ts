@@ -1,3 +1,4 @@
+import 'reflect-metadata';
 import { NestFactory } from '@nestjs/core';
 import { ValidationPipe } from '@nestjs/common';
 import { AppModule } from './app.module';
@@ -24,9 +25,25 @@ async function bootstrap() {
     allowedHeaders: ['Content-Type', 'Authorization'],
   });
 
-  const port = process.env.PORT ?? 3000;
-  await app.listen(port);
-  console.log(`🚀 Ustaad API running on http://localhost:${port}/api`);
+  return app;
 }
 
-bootstrap();
+// Export for Vercel
+let cachedApp: any;
+export default async (req: any, res: any) => {
+  if (!cachedApp) {
+    const app = await bootstrap();
+    await app.init();
+    cachedApp = app.getHttpAdapter().getInstance();
+  }
+  return cachedApp(req, res);
+};
+
+// Local development
+if (process.env.NODE_ENV !== 'production' && !process.env.VERCEL) {
+  bootstrap().then(async (app) => {
+    const port = process.env.PORT ?? 3000;
+    await app.listen(port);
+    console.log(`🚀 Ustaad API running on http://localhost:${port}/api`);
+  });
+}
